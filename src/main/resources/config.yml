@@ -1,16 +1,24 @@
 # BungeeNCPNotify Configuration
 
 general:
-  enable-send: true # Toggle if BungeeNCPNotify should send NoCheatPlus notifications to other servers.
-  enable-receive: true # Toggle if BungeeNCPNotify should receive and handle NoCheatPlus notifications on this server.
-  notify-cooldown: 90 # Toggle how much time passes until another notification gets sent (in seconds).
-  check-staff: true # Toggle if BungeeNCPNotify should send no notification when a staff member is online on the server.
-  report-message: '&c%player% &efailed check on &c%server%&e: &c%check% &e(&cVL: %violation%&e)' # Notification
+  # Toggle if the plugin should check for updates and auto-update the plugin (recommended).
+  enable-updater: true
+  # Toggle if a notification should get sent to other servers.
+  enable-send: true
+  # Toggle if notifications from other servers should get received and handled.
+  enable-receive: true
+   # Set how much time should pass until another notification gets sent (in seconds).
+  notify-cooldown: 90
+  # Toggle if no notification should get sent when a staff member is online on the server.
+  check-staff: true
+  # Notification that gets sent to the other servers
+  report-message: '&c%player% &efailed check on &c%server%&e: &c%check% &e(&cVL: %violation%&e)'
 
 # CHECKS:
 #   CATEGORY:
 #     CHECK: VIOLATION
-# Set violation to -1 to disable the notification for the specific check.
+# You can set here the minimum required violation, which must be achieved so that the player gets reported to the other servers.
+# Set violation to 0 or lower to disable the notification for the specific check.
 # You do not have to set violation to -1 if the check was disabled in the NoCheatPlus configuration.
 checks:
   blockbreak:

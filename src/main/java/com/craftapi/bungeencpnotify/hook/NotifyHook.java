@@ -41,8 +41,8 @@ public class NotifyHook extends AbstractNCPHook implements IStats, ILast {
 	public boolean onCheckFailure(CheckType checkType, Player player, IViolationInfo info) {
 		int violation = BungeeNCPNotify.getInstance().getConfig().getInt("checks." + checkType.getName());
 		
-		// Return false if the check is disabled in the config
-		if (violation <= 0)
+		// Check if the check is disabled or the reported total violation is lower as defined in config
+		if (violation <= 0 || info.getTotalVl() < violation)
 			return false;
 		
 		// Send only a message to other servers if there are no staff members on this server online (can be toggled in config)
