@@ -5,7 +5,7 @@
  * @author: Niklas (Krymonota)
  * @date: 27.10.2015
  */
-package com.craftapi.bungeencpnotify.manager;
+package com.craftapi.bungeencpnotify.hook;
 
 import com.craftapi.bungeencpnotify.BungeeNCPNotify;
 

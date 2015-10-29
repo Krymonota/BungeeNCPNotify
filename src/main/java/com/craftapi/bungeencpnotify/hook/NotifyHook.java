@@ -15,7 +15,6 @@ import org.bukkit.entity.Player;
 import com.craftapi.bungeencpnotify.BungeeNCPNotify;
 import com.craftapi.bungeencpnotify.manager.BungeeRequest;
 import com.craftapi.bungeencpnotify.manager.CooldownManager;
-import com.craftapi.bungeencpnotify.manager.PlayerReport;
 import com.craftapi.bungeencpnotify.util.Duration;
 
 import fr.neatmonster.nocheatplus.checks.CheckType;

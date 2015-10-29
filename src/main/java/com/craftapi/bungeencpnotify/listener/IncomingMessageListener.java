@@ -17,7 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import com.craftapi.bungeencpnotify.BungeeNCPNotify;
-import com.craftapi.bungeencpnotify.manager.PlayerReport;
+import com.craftapi.bungeencpnotify.hook.PlayerReport;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 import com.google.gson.JsonSyntaxException;

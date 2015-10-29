@@ -3,6 +3,8 @@
 general:
   # Toggle if the plugin should check for updates and auto-update the plugin (recommended).
   enable-updater: true
+  # Toggle if the plugin should send Metrics data to MCStats.org (recommended).
+  enable-metrics: true
   # Toggle if a notification should get sent to other servers.
   enable-send: true
   # Toggle if notifications from other servers should get received and handled.

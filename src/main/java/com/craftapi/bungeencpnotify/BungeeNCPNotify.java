@@ -12,6 +12,8 @@ import java.util.logging.Level;
 
 import javax.annotation.Nonnull;
 
+import net.gravitydevelopment.updater.Updater;
+
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
 
@@ -30,6 +32,7 @@ public class BungeeNCPNotify extends JavaPlugin {
 	private static BungeeNCPNotify instance;
 	private static Gson gson = new Gson();
 	private static CooldownManager cooldownManager = new CooldownManager();
+	private static final int BUKKITDEV_PROJECT_ID = 95815;
 	public static String SERVER_NAME = "";
 	public static String SUBCHANNEL = "BungeeNCPNotify";
 	
@@ -69,19 +72,22 @@ public class BungeeNCPNotify extends JavaPlugin {
 	    // Fetch the server's name (only for reloads)
 	    BungeeRequest.sendBungeeRequest("GetServer");
 	    
-	    // Register NCP Hook for checks, but only if it's enabled in the config.
+	    // Register NCP Hook for checks, but only if it's enabled in config
 	    if (this.getConfig().getBoolean("general.enable-send"))
 	    	NCPHookManager.addHook(CheckType.values(), new NotifyHook());
 	    
-	    // Start Plugin Metrics (mcstats.org)
-		try {
-			new Metrics(this).start();
-		} catch (IOException e) {
-			this.getServer().getLogger().log(Level.SEVERE, "Couldn't submit stats to MCStats.org!", e);
-		}
+	    // Start Plugin Metrics (mcstats.org) if it's enabled in config
+	    if (this.getConfig().getBoolean("general.enable-metrics")) {
+			try {
+				new Metrics(this).start();
+			} catch (IOException e) {
+				this.getServer().getLogger().log(Level.SEVERE, "Couldn't submit stats to MCStats.org!", e);
+			}
+	    }
 		
 		// Start Updater if it's enabled in config
-		if (this.getConfig().getBoolean("general.enable-updater")) {}
+		if (this.getConfig().getBoolean("general.enable-updater"))
+			new Updater(this, BUKKITDEV_PROJECT_ID, this.getFile(), Updater.UpdateType.DEFAULT, true);
 	}
 	
 	@Override
