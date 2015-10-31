@@ -30,6 +30,8 @@ public class PlayerListener implements Listener {
 					BungeeRequest.sendBungeeRequest(event.getPlayer(), "GetServer");
 			}
 		}.runTaskLater(BungeeNCPNotify.getInstance(), 5L);
+		
+		BungeeNCPNotify.getInstance().checkForStaffMembers();
 	}
 	
 	@EventHandler
@@ -38,6 +40,8 @@ public class PlayerListener implements Listener {
 		
 		if (BungeeNCPNotify.getCooldownManager().hasCooldown(player.getUniqueId()))
 			BungeeNCPNotify.getCooldownManager().removeCooldown(player.getUniqueId());
+		
+		BungeeNCPNotify.getInstance().checkForStaffMembers();
 	}
 	
 }

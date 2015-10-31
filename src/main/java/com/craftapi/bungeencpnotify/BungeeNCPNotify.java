@@ -14,6 +14,7 @@ import javax.annotation.Nonnull;
 
 import net.gravitydevelopment.updater.Updater;
 
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
 
@@ -27,6 +28,7 @@ import com.google.gson.Gson;
 
 import fr.neatmonster.nocheatplus.checks.CheckType;
 import fr.neatmonster.nocheatplus.hooks.NCPHookManager;
+import fr.neatmonster.nocheatplus.permissions.Permissions;
 
 public class BungeeNCPNotify extends JavaPlugin {
 
@@ -35,6 +37,7 @@ public class BungeeNCPNotify extends JavaPlugin {
 	private static CooldownManager cooldownManager = new CooldownManager();
 	private static ConfigurationManager configurationManager;
 	public static String SERVER_NAME = "";
+	private boolean isStaffMemberOnline = false;
 	private final int BUKKITDEV_PROJECT_ID = 95815;
 
 	@Nonnull
@@ -55,6 +58,11 @@ public class BungeeNCPNotify extends JavaPlugin {
 	@Nonnull
 	public static ConfigurationManager getConfiguration() {
 		return configurationManager;
+	}
+	
+	@Nonnull
+	public boolean isStaffMemberOnline() {
+		return this.isStaffMemberOnline;
 	}
 
 	@Override
@@ -81,6 +89,9 @@ public class BungeeNCPNotify extends JavaPlugin {
 
 		// Fetch the server's name (only for reloads)
 		BungeeRequest.sendBungeeRequest("GetServer");
+		
+		// Check if an online player is a staff member
+		this.checkForStaffMembers();
 		
 		// Register listeners
 		this.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
@@ -113,11 +124,22 @@ public class BungeeNCPNotify extends JavaPlugin {
 		if (this.getServer().getMessenger().isIncomingChannelRegistered(this, "BungeeCord"))
 			this.getServer().getMessenger().unregisterIncomingPluginChannel(this, "BungeeCord");
 
+		// Terminate variables
 		SERVER_NAME = null;
 		configurationManager = null;
 		cooldownManager = null;
 		gson = null;
 		instance = null;
+	}
+	
+	public void checkForStaffMembers() {
+		for (Player onlineplayer : this.getServer().getOnlinePlayers()) {
+			if (!onlineplayer.hasPermission(Permissions.NOTIFY))
+				continue;
+			
+			isStaffMemberOnline = true;
+			break;
+		}
 	}
 
 }

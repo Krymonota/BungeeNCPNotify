@@ -9,7 +9,6 @@ package com.craftapi.bungeencpnotify.hook;
 
 import java.io.IOException;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.craftapi.bungeencpnotify.BungeeNCPNotify;
@@ -22,7 +21,6 @@ import fr.neatmonster.nocheatplus.checks.access.IViolationInfo;
 import fr.neatmonster.nocheatplus.hooks.AbstractNCPHook;
 import fr.neatmonster.nocheatplus.hooks.ILast;
 import fr.neatmonster.nocheatplus.hooks.IStats;
-import fr.neatmonster.nocheatplus.permissions.Permissions;
 
 public class NotifyHook extends AbstractNCPHook implements IStats, ILast {
 
@@ -40,17 +38,14 @@ public class NotifyHook extends AbstractNCPHook implements IStats, ILast {
 	public boolean onCheckFailure(CheckType checkType, Player player, IViolationInfo info) {
 		int violation = BungeeNCPNotify.getConfiguration().getInt("checks." + checkType.getName());
 
-		// Check if the check is disabled or the reported total violation is
-		// lower as defined in config
+		// Check if the check is disabled or the reported total violation is lower as defined in config
 		if (violation <= 0 || info.getTotalVl() < violation)
 			return false;
 
-		// Send only a message to other servers if there are no staff members on
-		// this server online (can be toggled in config)
+		// Send only a message to other servers if there are no staff members on this server online if enabled in config
 		if (BungeeNCPNotify.getConfiguration().getBoolean("general.check-staff"))
-			for (Player onlineplayer : Bukkit.getServer().getOnlinePlayers())
-				if (onlineplayer.hasPermission(Permissions.NOTIFY))
-					return false;
+			if (BungeeNCPNotify.getInstance().isStaffMemberOnline())
+				return false;
 
 		CooldownManager cooldown = BungeeNCPNotify.getCooldownManager();
 

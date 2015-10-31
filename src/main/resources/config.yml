@@ -5,15 +5,15 @@ general:
   enable-updater: true
   # Toggle if the plugin should send Metrics data to MCStats.org (recommended).
   enable-metrics: true
-  # Toggle if a notification should get sent to other servers.
+  # Toggle if notifications about violations should get sent to other servers.
   enable-send: true
-  # Toggle if notifications from other servers should get received and handled.
+  # Toggle if notifications about violations from other servers should get received and handled.
   enable-receive: true
-   # Set how much time should pass until another notification gets sent (in seconds).
+   # Set how much time should pass until another notification about a violation of the player gets sent (in seconds).
   notify-cooldown: 90
-  # Toggle if no notification should get sent when a staff member is online on the server.
+  # Toggle if no notifications about violations should get sent when a staff member is online on the server (player needs the permission "nocheatplus.notify").
   check-staff: true
-  # Notification that gets sent to the other servers
+  # Notification message that gets sent to the other servers.
   report-message: '&c%player% &efailed check on &c%server%&e: &c%check% &e(&cVL: %violation%&e)'
 
 # CHECKS:
@@ -22,6 +22,7 @@ general:
 # You can set here the minimum required violation, which must be achieved so that the player gets reported to the other servers.
 # Set violation to 0 or lower to disable the notification for the specific check.
 # You do not have to set violation to -1 if the check was disabled in the NoCheatPlus configuration.
+# You can set "enable-send" to false to avoid from sending notifications in general.
 checks:
   blockbreak:
     direction: 15
