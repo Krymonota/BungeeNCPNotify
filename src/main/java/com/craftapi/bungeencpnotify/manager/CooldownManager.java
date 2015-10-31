@@ -16,7 +16,7 @@ import com.craftapi.bungeencpnotify.util.Expiration;
 
 public class CooldownManager {
 
-	private Map<UUID, Expiration> cooldown = new HashMap<UUID, Expiration>();
+	private final Map<UUID, Expiration> cooldown = new HashMap<UUID, Expiration>();
 
 	/**
 	 * @param UUID to check

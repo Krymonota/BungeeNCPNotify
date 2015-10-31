@@ -51,6 +51,7 @@
 							<shadedPattern>com.craftapi.bungeencpnotify.service</shadedPattern>
 						</relocation>
 					</relocations>
+					<createDependencyReducedPom>false</createDependencyReducedPom>
 				</configuration>
 				<executions>
 					<execution>

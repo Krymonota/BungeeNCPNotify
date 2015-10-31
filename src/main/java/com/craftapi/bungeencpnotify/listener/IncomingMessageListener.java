@@ -36,7 +36,7 @@ public class IncomingMessageListener implements PluginMessageListener {
 		
 		if (subChannel.equals("GetServer"))
 			BungeeNCPNotify.SERVER_NAME = in.readUTF();
-		else if (subChannel.equals(BungeeNCPNotify.SUBCHANNEL)) {
+		else if (subChannel.equals(BungeeNCPNotify.getInstance().getName())) {
 			byte[] msgBytes = new byte[in.readShort()];
 			in.readFully(msgBytes);
 	
@@ -55,7 +55,7 @@ public class IncomingMessageListener implements PluginMessageListener {
 				return;
 
 			// Get the Report Message from the config and replace the variables
-			String reportMessage = ChatColor.translateAlternateColorCodes('&', BungeeNCPNotify.getInstance().getConfig().getString("general.report-message"));
+			String reportMessage = ChatColor.translateAlternateColorCodes('&', BungeeNCPNotify.getConfiguration().getString("general.report-message"));
 			reportMessage = reportMessage.replaceAll("%player%", report.getPlayer()).replaceAll("%server%", report.getServer()).replaceAll("%check%", report.getCheckType().getName()).replaceAll("%violation%", String.valueOf(Math.round(report.getViolation())));			
 			
 			// Send an admin notification to players with the corresponding permission (only if the player has turned notifications on)

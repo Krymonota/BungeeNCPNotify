@@ -27,7 +27,7 @@ public class BungeeRequest {
 	public static void sendBungeeRequest(String request) {
 		sendBungeeRequest(null, request);
 	}
-	
+
 	/**
 	 * Sends a Bungee Request using the Plugin Messaging System
 	 * 
@@ -36,23 +36,23 @@ public class BungeeRequest {
 	 */
 	public static void sendBungeeRequest(Player player, String request) {
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
-		
+
 		out.writeUTF(request);
-		
+
 		if (player == null)
 			player = getRandomPlayer();
-				
+
 		if (player != null)
 			player.sendPluginMessage(BungeeNCPNotify.getInstance(), "BungeeCord", out.toByteArray());
 	}
-	
+
 	/**
 	 * {@link #sendBungeeRequest(String, String...)}
 	 */
 	public static void sendBungeeRequest(String message, String... request) throws IOException {
 		sendBungeeRequest(null, message, request);
 	}
-	
+
 	/**
 	 * Sends a Bungee Request using the Plugin Messaging System
 	 * 
@@ -62,24 +62,24 @@ public class BungeeRequest {
 	 */
 	public static void sendBungeeRequest(Player player, String message, String... request) throws IOException {
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
-		
+
 		Arrays.asList(request).forEach(req -> out.writeUTF(req));
-		
+
 		ByteArrayOutputStream msgBytes = new ByteArrayOutputStream();
 		DataOutputStream msgOut = new DataOutputStream(msgBytes);
-		
+
 		msgOut.writeUTF(message);
-		
+
 		out.writeShort(msgBytes.toByteArray().length);
-    	out.write(msgBytes.toByteArray());
-    	
-    	if (player == null)
+		out.write(msgBytes.toByteArray());
+
+		if (player == null)
 			player = getRandomPlayer();
-    	
-    	if (player != null)
+
+		if (player != null)
 			player.sendPluginMessage(BungeeNCPNotify.getInstance(), "BungeeCord", out.toByteArray());
 	}
-	
+
 	/**
 	 * @return A random Player (/ the first player in the Player Collection)
 	 */
@@ -89,5 +89,5 @@ public class BungeeRequest {
 		else
 			return null;
 	}
-	
+
 }

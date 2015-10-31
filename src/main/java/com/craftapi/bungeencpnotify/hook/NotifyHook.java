@@ -35,21 +35,23 @@ public class NotifyHook extends AbstractNCPHook implements IStats, ILast {
 	public String getHookVersion() {
 		return BungeeNCPNotify.getInstance().getDescription().getVersion();
 	}
-	
+
 	@Override
 	public boolean onCheckFailure(CheckType checkType, Player player, IViolationInfo info) {
-		int violation = BungeeNCPNotify.getInstance().getConfig().getInt("checks." + checkType.getName());
-		
-		// Check if the check is disabled or the reported total violation is lower as defined in config
+		int violation = BungeeNCPNotify.getConfiguration().getInt("checks." + checkType.getName());
+
+		// Check if the check is disabled or the reported total violation is
+		// lower as defined in config
 		if (violation <= 0 || info.getTotalVl() < violation)
 			return false;
-		
-		// Send only a message to other servers if there are no staff members on this server online (can be toggled in config)
-		if (BungeeNCPNotify.getInstance().getConfig().getBoolean("general.check-staff"))
+
+		// Send only a message to other servers if there are no staff members on
+		// this server online (can be toggled in config)
+		if (BungeeNCPNotify.getConfiguration().getBoolean("general.check-staff"))
 			for (Player onlineplayer : Bukkit.getServer().getOnlinePlayers())
 				if (onlineplayer.hasPermission(Permissions.NOTIFY))
 					return false;
-		
+
 		CooldownManager cooldown = BungeeNCPNotify.getCooldownManager();
 
 		// Player is still on cooldown, return false
@@ -58,14 +60,14 @@ public class NotifyHook extends AbstractNCPHook implements IStats, ILast {
 
 		try {
 			// Send a report notification to other servers
-			BungeeRequest.sendBungeeRequest(player, BungeeNCPNotify.getGson().toJson(new PlayerReport(player.getName(), checkType, info.getTotalVl())), "Forward", "ALL", BungeeNCPNotify.SUBCHANNEL);
+			BungeeRequest.sendBungeeRequest(player, BungeeNCPNotify.getGson().toJson(new PlayerReport(player.getName(), checkType, info.getTotalVl())), "Forward", "ALL", BungeeNCPNotify.getInstance().getName());
 		} catch (IOException e) {
 		}
-    	
+
 		// Add a cooldown to the player
-    	cooldown.setExpiration(player.getUniqueId(), Duration.seconds(BungeeNCPNotify.getInstance().getConfig().getInt("general.notify-cooldown")));
-    	
+		cooldown.setExpiration(player.getUniqueId(), Duration.seconds(BungeeNCPNotify.getConfiguration().getInt("general.notify-cooldown")));
+
 		return true;
-    }
+	}
 
 }
