@@ -55,7 +55,7 @@ public class NotifyHook extends AbstractNCPHook implements IStats, ILast {
 
 		try {
 			// Send a report notification to other servers
-			BungeeRequest.sendBungeeRequest(player, BungeeNCPNotify.getGson().toJson(new PlayerReport(player.getName(), checkType, info.getTotalVl())), "Forward", "ALL", BungeeNCPNotify.getInstance().getName());
+			BungeeRequest.sendBungeeRequest(player, BungeeNCPNotify.getGson().toJson(new PlayerReport(player.getName(), checkType, info.getTotalVl())), "Forward", "ONLINE", BungeeNCPNotify.getInstance().getName());
 		} catch (IOException e) {
 		}
 
