@@ -7,6 +7,7 @@
  */
 package com.craftapi.bungeencpnotify.listener;
 
+import com.craftapi.bungeencpnotify.manager.Request;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -26,7 +27,8 @@ public class PlayerListener implements Listener {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				if (BungeeNCPNotify.SERVER_NAME.isEmpty())
+				if (BungeeNCPNotify.SERVER_NAME.isEmpty() &&
+						BungeeNCPNotify.getInstance().getServer().getPluginManager().getPlugin("LilyPad-Connect") == null)
 					BungeeRequest.sendBungeeRequest(event.getPlayer(), "GetServer");
 			}
 		}.runTaskLater(BungeeNCPNotify.getInstance(), 5L);

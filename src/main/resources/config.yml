@@ -9,12 +9,21 @@ general:
   enable-send: true
   # Toggle if notifications about violations from other servers should get received and handled.
   enable-receive: true
-   # Set how much time should pass until another notification about a violation of the player gets sent (in seconds).
+  # Set how much time should pass until another notification about a violation of the player gets sent (in seconds).
   notify-cooldown: 90
   # Toggle if no notifications about violations should get sent when a staff member is online on the server (player needs the permission "nocheatplus.notify").
   check-staff: true
   # Notification message that gets sent to the other servers.
   report-message: '&c%player% &efailed check on &c%server%&e: &c%check% &e(&cVL: %violation%&e)'
+
+# Enable alternative messaging system.  Redis support is not directly dependant on RedisBungee, however is most useful in
+# combination with it.  This setting will change message sending and recieving to run over a Redis publisher/subcriber instead
+# of a bungeecord message sender/listener.  This setting can also be used for a lilypad or other proxy based network.
+redis:
+  enable: false
+  ip: '127.0.0.1'
+  port: 6379
+  password: ''
 
 # CHECKS:
 #   CATEGORY:

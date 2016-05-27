@@ -34,9 +34,7 @@ public class IncomingMessageListener implements PluginMessageListener {
 		ByteArrayDataInput in = ByteStreams.newDataInput(message);
 		String subChannel = in.readUTF();
 		
-		if (subChannel.equals("GetServer"))
-			BungeeNCPNotify.SERVER_NAME = in.readUTF();
-		else if (subChannel.equals(BungeeNCPNotify.getInstance().getName())) {
+		if (subChannel.equals(BungeeNCPNotify.getInstance().getName())) {
 			byte[] msgBytes = new byte[in.readShort()];
 			in.readFully(msgBytes);
 	
