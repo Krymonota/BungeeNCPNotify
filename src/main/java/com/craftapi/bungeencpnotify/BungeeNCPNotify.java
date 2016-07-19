@@ -12,11 +12,15 @@ import java.util.logging.Level;
 
 import javax.annotation.Nonnull;
 
+import com.craftapi.bungeencpnotify.listener.IncomingRedisMessageListener;
+import com.craftapi.bungeencpnotify.util.BungeeGetServer;
+import com.craftapi.bungeencpnotify.util.Metrics;
+import lilypad.client.connect.api.Connect;
 import net.gravitydevelopment.updater.Updater;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.mcstats.Metrics;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.craftapi.bungeencpnotify.hook.NotifyHook;
 import com.craftapi.bungeencpnotify.listener.IncomingMessageListener;
@@ -29,16 +33,33 @@ import com.google.gson.Gson;
 import fr.neatmonster.nocheatplus.checks.CheckType;
 import fr.neatmonster.nocheatplus.hooks.NCPHookManager;
 import fr.neatmonster.nocheatplus.permissions.Permissions;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 
 public class BungeeNCPNotify extends JavaPlugin {
 
 	private static BungeeNCPNotify instance;
-	private static Gson gson = new Gson();
-	private static CooldownManager cooldownManager = new CooldownManager();
+	private static Gson gson;
+	private static CooldownManager cooldownManager;
 	private static ConfigurationManager configurationManager;
-	public static String SERVER_NAME = "";
+	public static String SERVER_NAME;
 	private boolean isStaffMemberOnline = false;
 	private final int BUKKITDEV_PROJECT_ID = 95815;
+	private static JedisPool jedisPool;
+	private static IncomingRedisMessageListener jedisListener;
+
+	@Nonnull
+	public static JedisPool getJedisPool() { return jedisPool; }
+
+	@Nonnull
+	public static void setJedisPool(JedisPool pool) { jedisPool = pool; }
+
+	@Nonnull
+	public static IncomingRedisMessageListener getJedisListener() { return jedisListener; }
+
+	@Nonnull
+	public static void setJedisListener(IncomingRedisMessageListener listener) { jedisListener = listener; }
 
 	@Nonnull
 	public static BungeeNCPNotify getInstance() {
@@ -66,29 +87,63 @@ public class BungeeNCPNotify extends JavaPlugin {
 	}
 
 	@Override
-	public void onLoad() {
-		instance = this;
-	}
-
-	@Override
 	public void onEnable() {
+
+		instance = this;
+
 		// Config stuff
 		this.saveDefaultConfig();
 		configurationManager = new ConfigurationManager();
 
-		// Register NCP Hook and outgoing plugin channel if it's enabled in
-		// config
-		if (getConfiguration().getBoolean("general.enable-send")) {
+		// Other stuff
+		cooldownManager = new CooldownManager();
+		gson = new Gson();
+		SERVER_NAME = "";
+
+
+		// Fetch the server's name (only for reloads)
+		if (getServer().getPluginManager().getPlugin("LilyPad-Connect") != null) {
+			Connect connect = this.getServer().getServicesManager().getRegistration(Connect.class).getProvider();
+			SERVER_NAME = connect.getSettings().getUsername();
+		} else {
 			this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+			this.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeGetServer());
+			BungeeRequest.sendBungeeRequest("GetServer");
+		}
+
+		// If we are using redis then create the connection
+		if (getConfiguration().getBoolean("redis.enable")) {
+			if (getConfiguration().getString("redis.password") == null || getConfiguration().getString("redis.password").equals(""))
+				setJedisPool(new JedisPool(new JedisPoolConfig(), getConfiguration().getString("redis.ip"), getConfiguration().getInt("redis.port"), 0));
+			else
+				setJedisPool(new JedisPool(new JedisPoolConfig(), getConfiguration().getString("redis.ip"), getConfiguration().getInt("redis.port"), 0, getConfiguration().getString("redis.password")));
+		}
+
+		// Register NCP Hook outgoing messages if it's enabled in config
+		if (getConfiguration().getBoolean("general.enable-send")) {
 			NCPHookManager.addHook(CheckType.values(), new NotifyHook());
 		}
 
-		// Register incoming plugin channel if it's enabled in config
-		if (getConfiguration().getBoolean("general.enable-receive"))
-			this.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new IncomingMessageListener());
-
-		// Fetch the server's name (only for reloads)
-		BungeeRequest.sendBungeeRequest("GetServer");
+		// Register incoming message channel if it's enabled in config
+		if (getConfiguration().getBoolean("general.enable-receive")) {
+			if (getConfiguration().getBoolean("redis.enable")) {
+				new BukkitRunnable() {
+					@Override
+					public void run() {
+						setJedisListener(new IncomingRedisMessageListener());
+						Jedis jedis = getJedisPool().getResource();
+						try {
+							jedis.subscribe(getJedisListener(), "bncpnotify");
+						} catch (Exception e) {
+							getLogger().severe("Unable to connect to Redis server.");
+							throw e;
+						} finally {
+						    if (jedis != null) { jedis.close(); }
+						}
+					}
+				}.runTaskAsynchronously(this);
+			} else this.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new IncomingMessageListener());
+		}
 		
 		// Check if an online player is a staff member
 		this.checkForStaffMembers();
@@ -123,6 +178,17 @@ public class BungeeNCPNotify extends JavaPlugin {
 		// Unregister incoming plugin channel if it's registered
 		if (this.getServer().getMessenger().isIncomingChannelRegistered(this, "BungeeCord"))
 			this.getServer().getMessenger().unregisterIncomingPluginChannel(this, "BungeeCord");
+
+		// Kill any async tasks that may be left over
+		getServer().getScheduler().cancelTasks(instance);
+
+		// Destroy jedis listener if redis was enabled
+		if (getConfiguration().getBoolean("redis.enable")) {
+			getJedisListener().unsubscribe();
+			jedisListener = null;
+			getJedisPool().destroy();
+			jedisPool = null;
+		}
 
 		// Terminate variables
 		SERVER_NAME = null;

@@ -5,3 +5,4 @@ authors: [Krymonota, CraftAPI]
 website: http://craftapi.com
 main: com.craftapi.bungeencpnotify.BungeeNCPNotify
 depend: [NoCheatPlus]
+softdepend: [LilyPad-Connect]

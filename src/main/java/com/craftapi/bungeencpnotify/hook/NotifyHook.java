@@ -9,6 +9,7 @@ package com.craftapi.bungeencpnotify.hook;
 
 import java.io.IOException;
 
+import com.craftapi.bungeencpnotify.manager.Request;
 import org.bukkit.entity.Player;
 
 import com.craftapi.bungeencpnotify.BungeeNCPNotify;
@@ -55,7 +56,7 @@ public class NotifyHook extends AbstractNCPHook implements IStats, ILast {
 
 		try {
 			// Send a report notification to other servers
-			BungeeRequest.sendBungeeRequest(player, BungeeNCPNotify.getGson().toJson(new PlayerReport(player.getName(), checkType, info.getTotalVl())), "Forward", "ONLINE", BungeeNCPNotify.getInstance().getName());
+			Request.sendRequest(player, BungeeNCPNotify.getGson().toJson(new PlayerReport(player.getName(), checkType, info.getTotalVl())), "Forward", "ONLINE", BungeeNCPNotify.getInstance().getName());
 		} catch (IOException e) {
 		}
 
